@@ -7,5 +7,5 @@ export * from './routers/routes';
 export * from './styles/breackpoints';
 export * from './styles/themes';
 export * from './styles/variables';
-export * from './supabase/supabase.confing';
+export * from './supabase/supabase.config';
 export * from './utils/dataEstatica';
