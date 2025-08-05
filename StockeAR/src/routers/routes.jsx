@@ -1,9 +1,31 @@
-import {BrowserRouter,Routes,Route} from "react-router-dom"
-import {Home} from "../index"
-export function Myroutes(){
-    return(<BrowserRouter>
+// routers/routes.jsx (CORREGIDO)
+import { Routes, Route } from "react-router-dom";
+import {
+  Configuracion,
+  Home,
+  Login,
+  Marca,
+  ProtectedRoute,
+  UserAuth,
+  Categorias
+} from "../index";
+
+export function MyRoutes() {
+  // Solo necesitamos obtener el estado del usuario para pasarlo a ProtectedRoute
+  const { user } = UserAuth();
+
+  return (
     <Routes>
-        <Route path="/" element ={<Home/>}/>
+      {/* Esta ruta es pública */}
+      <Route path="/login" element={<Login />} />
+
+      {/* Todo lo que esté dentro de este Route estará protegido */}
+      <Route element={<ProtectedRoute user={user} redirectTo="/login" />}>
+        <Route path="/" element={<Home />} />
+        <Route path="/configurar" element={<Configuracion />} />
+        <Route path="/configurar/marca" element={<Marca />} />
+        <Route path="/configurar/categorias" element={<Categorias />} />
+      </Route>
     </Routes>
-    </BrowserRouter>)
+  );
 }
