@@ -1,19 +1,17 @@
-import React, { useState } from "react"; // <-- Importamos useState
+import { useState } from "react";
 import styled from "styled-components";
 import {
-  FormularioProducto,
-  useProductosStore,
-  Buscador,
   Header,
+  FormularioProducto,
+  Buscador,
+  useProductosStore,
 } from "../../index";
 import { FaEdit, FaTrash } from "react-icons/fa";
 
 export function ProductosTemplate({ data }) {
-  // --- AÑADIDO: Los estados que faltaban ---
   const [showForm, setShowForm] = useState(false);
   const [dataSelect, setDataSelect] = useState({});
   const [accion, setAccion] = useState("");
-  
   const { setBuscador, eliminarproductos } = useProductosStore();
   const [state, setState] = useState(false);
 
@@ -22,15 +20,15 @@ export function ProductosTemplate({ data }) {
     setAccion("Nuevo");
     setShowForm(true);
   };
-
+  
   const handleEdit = (item) => {
     setDataSelect(item);
     setAccion("Editar");
     setShowForm(true);
   };
-
+  
   const handleDelete = (id) => {
-    if (window.confirm("¿Estás seguro de que quieres eliminar este producto?")) {
+    if(window.confirm("¿Estás seguro?")) {
       eliminarproductos({ id });
     }
   };
@@ -38,19 +36,17 @@ export function ProductosTemplate({ data }) {
   return (
     <Container>
       {showForm && (
-        <Modal>
-            <FormularioProducto
-              onClose={() => setShowForm(false)}
-              dataSelect={dataSelect}
-              accion={accion}
-            />
-        </Modal>
+        <FormularioProducto
+          onClose={() => setShowForm(false)} 
+          dataSelect={dataSelect} 
+          accion={accion} 
+        />
       )}
       
       <div className="header">
         <Header stateConfig={{ state: state, setState: () => setState(!state) }} />
       </div>
-
+      
       <TitleActions>
         <h1>Productos</h1>
         <button onClick={handleNew}>+ Nuevo Producto</button>
@@ -90,7 +86,6 @@ export function ProductosTemplate({ data }) {
     </Container>
   );
 }
-
 
 // Estilos
 const Container = styled.div`

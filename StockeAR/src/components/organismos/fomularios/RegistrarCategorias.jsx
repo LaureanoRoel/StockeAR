@@ -4,7 +4,7 @@ import { v } from "../../../styles/variables";
 import {
   InputText,
   Btnsave,
-  useAuthStore, // Usaremos este para obtener el id de la empresa
+  useAuthStore, 
   ConvertirCapitalize,
   useCategoriasStore,
 } from "../../../index";
@@ -15,14 +15,13 @@ export function RegistrarCategorias({ onClose, dataSelect, accion }) {
   const [currentColor, setColor] = useState("#36e1f4ff");
   const { insertarcategorias, editarcategorias } = useCategoriasStore();
   
-  // --- CAMBIO: Obtenemos el usuario logueado desde el AuthStore ---
-  const { user } = useAuthStore();
+ const { user } = useAuthStore();
   
   const {
     register,
     formState: { errors },
     handleSubmit,
-    setValue, // <-- AÑADIDO: para poder setear valores en el form
+    setValue, 
   } = useForm();
 
   const elegirColor = (color) => {
@@ -30,15 +29,13 @@ export function RegistrarCategorias({ onClose, dataSelect, accion }) {
   };
 
   async function insertar(data) {
-    // --- CAMBIO: El objeto 'p' ahora tiene los nombres de campo correctos para la API ---
     const p = {
       descripcion: ConvertirCapitalize(data.nombre),
       color: currentColor,
-      empresa_id: user.empresa.id, // Obtenemos el id de la empresa del usuario logueado
+      empresa_id: user.empresa.id, 
     };
 
     if (accion === "Editar") {
-      // Si es una edición, añadimos el id de la categoría
       await editarcategorias({ ...p, id: dataSelect.id });
     } else {
       await insertarcategorias(p);
@@ -48,7 +45,6 @@ export function RegistrarCategorias({ onClose, dataSelect, accion }) {
 
   useEffect(() => {
     if (accion === "Editar") {
-      // --- CAMBIO: Usamos setValue de react-hook-form para llenar el input ---
       setValue("nombre", dataSelect.descripcion);
       setColor(dataSelect.color);
     }
@@ -74,7 +70,6 @@ export function RegistrarCategorias({ onClose, dataSelect, accion }) {
         <form className="formulario" onSubmit={handleSubmit(insertar)}>
           <section>
             <article>
-              {/* --- CAMBIO: Eliminamos defaultValue para que react-hook-form controle el valor --- */}
               <InputText icono={<v.iconomarca />}>
                 <input
                   className="form__field"

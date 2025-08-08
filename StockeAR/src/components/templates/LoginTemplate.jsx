@@ -1,11 +1,9 @@
-// components/templates/LoginTemplate.jsx
 import styled from "styled-components";
 import { Btnsave, v, useAuthStore, InputText, FooterLogin, RegistrarAdmin } from "../../index";
 import { Device } from "../../styles/breackpoints";
-import { useContext, useState, useEffect } from "react"; // <-- CAMBIO: Importamos useEffect
+import { useContext, useState, useEffect } from "react"; 
 import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
-import carrito from "../../assets/carrito.svg";
 import logo from "../../assets/inventarioslogo.png";
 import { MdOutlineInfo } from "react-icons/md";
 import { ThemeContext } from "../../App";
@@ -14,7 +12,6 @@ export function LoginTemplate() {
   const { setTheme } = useContext(ThemeContext);
   setTheme("light");
 
-  // <-- CAMBIO: Obtenemos el usuario y el error del store
   const { signInWithEmail, user, error: authError } = useAuthStore();
   const [state, setState] = useState(false);
   const navigate = useNavigate();
@@ -24,7 +21,6 @@ export function LoginTemplate() {
     handleSubmit,
   } = useForm();
 
-  // <-- CAMBIO: La función ahora solo envía los datos
   async function iniciar(data) {
     await signInWithEmail({
       correo: data.correo,
@@ -32,30 +28,29 @@ export function LoginTemplate() {
     });
   }
 
-  // <-- CAMBIO: Usamos useEffect para reaccionar al cambio de estado del usuario
   useEffect(() => {
     if (user) {
-      navigate("/"); // Si el usuario existe, navegamos a la página principal
+      navigate("/");
     }
-  }, [user, navigate]); // Se ejecuta cada vez que 'user' o 'navigate' cambian
+  }, [user, navigate]); 
 
   return (
     <Container>
-      {/* ... (el resto de tu JSX de logos y banners no cambia) ... */}
+      {}
       <div className="contentLogo">
         <img src={logo}></img>
         <span>StockeAR</span>
       </div>
       <div className="bannerlateral">
-        <img src={carrito}></img>
+        
       </div>
 
       <div className="contentCard">
         <div className="card">
           {state && <RegistrarAdmin setState={() => setState(!state)} />}
-          <Titulo>StockPRO</Titulo>
+          <Titulo>StockeAR</Titulo>
           
-          {/* <-- CAMBIO: Mostramos el error que viene del store */}
+          {}
           {authError && (
             <TextoStateInicio>{authError}</TextoStateInicio>
           )}
@@ -101,15 +96,136 @@ export function LoginTemplate() {
     </Container>
   );
 }
-// ... (tus styled-components no cambian)
+
 const Container = styled.div`
-  /* ... */
+  background-size: cover;
+  height: 100vh;
+  display: grid;
+  grid-template-columns: 1fr;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  background-color: #262626;
+  @media ${Device.tablet} {
+    grid-template-columns: 1fr 2fr;
+  }
+  .contentLogo {
+    position: absolute;
+    top: 15px;
+    font-weight: 700;
+    display: flex;
+    left: 15px;
+    align-items: center;
+    color: #fff;
+
+    img {
+      width: 50px;
+    }
+  }
+  .cuadros {
+    transition: cubic-bezier(0.4, 0, 0.2, 1) 0.6s;
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    bottom: 0;
+    transition: 0.6s;
+  }
+
+  .bannerlateral {
+    background-color: #57d5ffff;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    img {
+      width: 80%;
+    }
+  }
+  .contentCard {
+    grid-column: 2;
+    background-color: #ffffff;
+    background-size: cover;
+    z-index: 100;
+    position: relative;
+    gap: 30px;
+    display: flex;
+    padding: 20px;
+    box-shadow: 8px 5px 18px 3px rgba(0, 0, 0, 0.35);
+    justify-content: center;
+    width: auto;
+    height: 100%;
+    width: 100%;
+    align-items: center;
+    flex-direction: column;
+    justify-content: space-between;
+    .card {
+      padding-top: 80px;
+      width: 100%;
+      @media ${Device.laptop} {
+        width: 50%;
+      }
+    }
+    .version {
+      color: #727272;
+      text-align: start;
+    }
+    .contentImg {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+
+      img {
+        width: 40%;
+
+        animation: flotar 1.5s ease-in-out infinite alternate;
+      }
+    }
+    .frase {
+      color: #fcf947ff;
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 30px;
+    }
+    .ayuda {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      color: #8d8d8d;
+      font-size: 15px;
+      font-weight: 500;
+    }
+    &:hover {
+      .contentsvg {
+        top: -100px;
+        opacity: 1;
+      }
+      .cuadros {
+        transform: rotate(37deg) rotateX(5deg) rotateY(12deg) rotate(3deg)
+          skew(2deg) skewY(1deg) scaleX(1.2) scaleY(1.2);
+        color: red;
+      }
+    }
+  }
+  @keyframes flotar {
+    0% {
+      transform: translate(0, 0px);
+    }
+    50% {
+      transform: translate(0, 15px);
+    }
+    100% {
+      transform: translate(0, -0px);
+    }
+  }
 `;
 const Titulo = styled.span`
-  /* ... */
+  font-size: 3rem;
+  font-weight: 700;
 `;
 const ContainerBtn = styled.div`
-  /* ... */
+  margin-top: 15px;
+  display: flex;
+  justify-content: center;
 `;
 const TextoStateInicio = styled.p`
   color: #fc7575;

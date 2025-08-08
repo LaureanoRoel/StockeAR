@@ -1,8 +1,5 @@
-# app/schemas.py
 from pydantic import BaseModel
 from typing import Optional, List
-
-# --- Schemas para Empresa, Categoria y Marca ---
 
 class EmpresaBase(BaseModel):
     nombre: str
@@ -25,7 +22,6 @@ class CategoriaCreate(CategoriaBase):
 
 class Categoria(CategoriaBase):
     id: int
-    # empresa_id: int # No es necesario en la respuesta si no lo usas
     class Config:
         from_attributes = True
 
@@ -37,11 +33,10 @@ class MarcaCreate(MarcaBase):
 
 class Marca(MarcaBase):
     id: int
-    # empresa_id: int # No es necesario en la respuesta si no lo usas
     class Config:
         from_attributes = True
 
-# --- Schemas para Usuario ---
+# Schemaa usuario 
 
 class UsuarioBase(BaseModel):
     email: str
@@ -57,14 +52,13 @@ class Usuario(UsuarioBase):
     class Config:
         from_attributes = True
 
-# --- Schema para la respuesta del Token ---
 
 class Token(BaseModel):
     access_token: str
     token_type: str
     user: Usuario
 
-# --- Schemas finales para Producto ---
+
 
 class ProductoBase(BaseModel):
     descripcion: str

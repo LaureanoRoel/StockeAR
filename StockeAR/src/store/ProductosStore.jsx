@@ -7,7 +7,6 @@ export const useProductosStore = create((set, get) => ({
   buscador: "",
   setBuscador: (p) => set({ buscador: p }),
 
-  // La página busca esta función con el nombre "mostrarProductos"
   mostrarProductos: async (p) => {
     try {
       const response = await apiClient.get(`/productos/empresa/${p.id_empresa}`);

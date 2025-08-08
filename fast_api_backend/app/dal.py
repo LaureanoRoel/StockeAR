@@ -1,12 +1,10 @@
-# app/dal.py
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from sqlalchemy.orm import selectinload
-# --- AÑADIDO: Importamos 'func' para poder usar funciones de SQL como COUNT ---
 from sqlalchemy import func
 from . import models, schemas
 
-# --- Lógica para Categorías ---
+# Categorias
 async def crear_categoria(db: AsyncSession, categoria: schemas.CategoriaCreate):
     db_categoria = models.Categoria(**categoria.model_dump())
     db.add(db_categoria)
@@ -45,7 +43,7 @@ async def eliminar_categoria(db: AsyncSession, categoria_id: int):
         await db.commit()
     return db_categoria
 
-# --- Lógica para Marcas ---
+#   Marcas
 async def crear_marca(db: AsyncSession, marca: schemas.MarcaCreate):
     db_marca = models.Marca(**marca.model_dump())
     db.add(db_marca)
@@ -74,7 +72,7 @@ async def eliminar_marca(db: AsyncSession, marca_id: int):
         await db.commit()
     return db_marca
 
-# --- Lógica para Empresas ---
+# Empresas
 async def crear_empresa(db: AsyncSession, empresa: schemas.EmpresaCreate):
     db_empresa = models.Empresa(**empresa.model_dump())
     db.add(db_empresa)
@@ -90,7 +88,7 @@ async def obtener_empresas(db: AsyncSession, skip: int = 0, limit: int = 100):
     result = await db.execute(select(models.Empresa).offset(skip).limit(limit))
     return result.scalars().all()
 
-# --- AÑADIDO: Función para contar usuarios en una empresa ---
+
 async def contar_usuarios_por_empresa(db: AsyncSession, empresa_id: int):
     result = await db.execute(
         select(func.count(models.Usuario.id))
@@ -98,7 +96,7 @@ async def contar_usuarios_por_empresa(db: AsyncSession, empresa_id: int):
     )
     return result.scalar_one()
 
-# --- Lógica para Usuarios ---
+# Usuarios
 async def get_user_by_email(db: AsyncSession, email: str):
     result = await db.execute(
         select(models.Usuario)
@@ -127,7 +125,7 @@ async def crear_producto(db: AsyncSession, producto: schemas.ProductoCreate):
     db.add(db_producto)
     await db.commit()
     await db.refresh(db_producto)
-    # Recargamos para obtener las relaciones
+
     result = await db.execute(
         select(models.Producto)
         .options(selectinload(models.Producto.categoria), selectinload(models.Producto.marca))

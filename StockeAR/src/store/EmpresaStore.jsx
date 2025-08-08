@@ -1,4 +1,3 @@
-// store/EmpresaStore.jsx
 import { create } from "zustand";
 import apiClient from '../api/api';
 
@@ -16,7 +15,7 @@ export const useEmpresaStore = create((set) => ({
     }
   },
 
-  // --- AÑADIDO: Función para contar usuarios activada ---
+
   contarusuariosXempresa: async (p) => {
     try {
       const response = await apiClient.get(`/empresas/${p.id_empresa}/contar_usuarios`);

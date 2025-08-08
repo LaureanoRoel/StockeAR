@@ -1,4 +1,3 @@
-# app/security.py
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
@@ -8,12 +7,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from . import dal, database
 
-# --- CONFIGURACIÓN ---
 SECRET_KEY = "tu-clave-secreta-debe-ser-muy-larga-y-segura"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24 * 7 # 7 días
-
-# --- MANEJO DE CONTRASEÑAS ---
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 def verify_password(plain_password, hashed_password):
@@ -22,7 +18,7 @@ def verify_password(plain_password, hashed_password):
 def get_password_hash(password):
     return pwd_context.hash(password)
 
-# --- MANEJO DE TOKENS JWT ---
+
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/token")
 
 def create_access_token(data: dict):

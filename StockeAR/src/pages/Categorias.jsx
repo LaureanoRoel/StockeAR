@@ -1,17 +1,16 @@
-// src/pages/Categorias.jsx 
+
 import { useQuery } from "@tanstack/react-query";
 import {
   CategoriasTemplate,
   SpinnerLoader,
   useCategoriasStore,
-  useAuthStore, // <-- CAMBIO: Usamos el AuthStore
+  useAuthStore, 
 } from "../index";
 
 export function Categorias() {
   const { mostrarcategorias, datacategorias } = useCategoriasStore();
-  const { user } = useAuthStore(); // <-- CAMBIO: Obtenemos el usuario logueado
+  const { user } = useAuthStore();
 
-  // Guarda de seguridad mientras carga el usuario
   if (!user) {
     return <SpinnerLoader />;
   }

@@ -14,7 +14,7 @@ export const useMarcaStore = create((set, get) => ({
       return response.data;
     } catch (error) {
       console.error("Error al obtener marcas:", error);
-      throw error; // Lanza el error para que useQuery lo capture
+      throw error;
     }
   },
 

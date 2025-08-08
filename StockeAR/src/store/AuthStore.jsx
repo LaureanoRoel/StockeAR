@@ -1,4 +1,3 @@
-// store/AuthStore.jsx
 import { create } from "zustand";
 import apiClient from '../api/api';
 
@@ -42,7 +41,6 @@ export const useAuthStore = create((set, get) => ({
     }
     
     try {
-      // --- CAMBIO: Corregido de '/users/me' a '/usuarios/me' ---
       const response = await apiClient.get('/usuarios/me'); 
       set({ user: response.data });
     } catch (error) {

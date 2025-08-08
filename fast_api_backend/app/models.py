@@ -1,4 +1,3 @@
-# app/models.py
 from sqlalchemy import Column, Integer, String, Float, ForeignKey
 from sqlalchemy.orm import relationship
 from .database import Base
@@ -9,7 +8,7 @@ class Empresa(Base):
     id = Column(Integer, primary_key=True, index=True)
     nombre = Column(String, unique=True, index=True, nullable=False)
     
-    # nullable=True para permitir que este campo esté vacío
+  
     simbolo_moneda = Column(String, nullable=True)
 
     usuarios = relationship("Usuario", back_populates="empresa")
@@ -43,7 +42,7 @@ class Marca(Base):
     empresa_id = Column(Integer, ForeignKey("empresa.id"))
     empresa = relationship("Empresa", back_populates="marcas")
     productos = relationship("Producto", back_populates="marca")
-# En app/models.py
+
 class Producto(Base):
     __tablename__ = "producto"
     id = Column(Integer, primary_key=True, index=True)
