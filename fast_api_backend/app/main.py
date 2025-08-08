@@ -1,42 +1,37 @@
 # app/main.py
 from fastapi import FastAPI
-# --- AÑADIDO: Importamos el middleware de CORS ---
 from fastapi.middleware.cors import CORSMiddleware
 from .database import engine, Base
-from .routers import usuarios, categorias, marcas, empresas, auth 
+# Importamos TODOS los routers, incluido el nuevo de productos
+from .routers import usuarios, categorias, marcas, empresas, auth, productos
 
 app = FastAPI(title="Gestor API")
 
-# --- AÑADIDO: Configuración de CORS ---
 # Lista de orígenes permitidos (la dirección de tu frontend de React)
 origins = [
     "http://localhost:5173",
 ]
 
+# Añadimos el middleware de CORS para permitir la comunicación entre frontend y backend
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
     allow_credentials=True,
-    allow_methods=["*"], # Permite todos los métodos (GET, POST, etc.)
-    allow_headers=["*"], # Permite todos los encabezados
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 
-@app.on_event("startup")
-async def startup():
-    async with engine.begin() as conn:
-        # Esto crea las tablas si no existen al iniciar.
-        await conn.run_sync(Base.metadata.create_all)
 
-
-# Incluimos todos los routers
+# Incluimos todos los routers en la aplicación principal
 app.include_router(auth.router, prefix="/auth", tags=["Auth"])
 app.include_router(usuarios.router, prefix="/usuarios", tags=["Usuarios"])
 app.include_router(categorias.router, prefix="/categorias", tags=["Categorías"])
 app.include_router(marcas.router, prefix="/marcas", tags=["Marcas"])
 app.include_router(empresas.router, prefix="/empresas", tags=["Empresas"])
+app.include_router(productos.router, prefix="/productos", tags=["Productos"])
 
-
+# Ruta de bienvenida
 @app.get("/")
 async def root():
     return {"message": "Bienvenido a la API del Gestor"}

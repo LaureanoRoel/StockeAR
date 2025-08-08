@@ -122,3 +122,30 @@ async def create_user(db: AsyncSession, user: schemas.UsuarioCreate, hashed_pass
         .where(models.Usuario.id == db_user.id)
     )
     return result.scalar_one_or_none()
+async def crear_producto(db: AsyncSession, producto: schemas.ProductoCreate):
+    db_producto = models.Producto(**producto.model_dump())
+    db.add(db_producto)
+    await db.commit()
+    await db.refresh(db_producto)
+    # Recargamos para obtener las relaciones
+    result = await db.execute(
+        select(models.Producto)
+        .options(selectinload(models.Producto.categoria), selectinload(models.Producto.marca))
+        .where(models.Producto.id == db_producto.id)
+    )
+    return result.scalar_one_or_none()
+
+async def obtener_productos_por_empresa(db: AsyncSession, empresa_id: int):
+    result = await db.execute(
+        select(models.Producto)
+        .options(selectinload(models.Producto.categoria), selectinload(models.Producto.marca))
+        .where(models.Producto.empresa_id == empresa_id)
+    )
+    return result.scalars().all()
+async def buscar_marcas(db: AsyncSession, empresa_id: int, descripcion: str):
+    result = await db.execute(
+        select(models.Marca)
+        .where(models.Marca.empresa_id == empresa_id)
+        .where(models.Marca.descripcion.ilike(f"%{descripcion}%"))
+    )
+    return result.scalars().all()

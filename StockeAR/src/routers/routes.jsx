@@ -7,7 +7,8 @@ import {
   Marca,
   ProtectedRoute,
   UserAuth,
-  Categorias
+  Categorias,
+  Productos,
 } from "../index";
 
 export function MyRoutes() {
@@ -25,6 +26,7 @@ export function MyRoutes() {
         <Route path="/configurar" element={<Configuracion />} />
         <Route path="/configurar/marca" element={<Marca />} />
         <Route path="/configurar/categorias" element={<Categorias />} />
+         <Route path="/productos" element={<Productos />} />
       </Route>
     </Routes>
   );

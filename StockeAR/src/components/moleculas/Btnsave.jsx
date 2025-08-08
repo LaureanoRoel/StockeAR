@@ -1,17 +1,25 @@
 import styled from "styled-components";
-import {Icono} from "../../index"
-export function Btnsave({ funcion, titulo, bgcolor, icono,url }) {
-  return (
-    <Container type="submit" $bgcolor={bgcolor}>
-   
-     <Icono>{icono}</Icono>
-     
+import { Icono } from "../../index";
 
-      <span className="btn" onClick={funcion}>
-        <a href={url} target="_blank">
-           {titulo}
-        </a>
-       
+export function Btnsave({ funcion, titulo, bgcolor, icono, url }) {
+  // --- CAMBIO: El botón ahora maneja el 'onClick' y su 'type' es dinámico ---
+  return (
+    <Container 
+      onClick={funcion} 
+      type={funcion ? "button" : "submit"} // Si tiene una función, es un botón normal. Si no, es un 'submit'.
+      $bgcolor={bgcolor}
+    >
+      <Icono>{icono}</Icono>
+      
+      {/* --- CAMBIO: El span ya no necesita un onClick --- */}
+      <span className="btn">
+        {url ? (
+          <a href={url} target="_blank" rel="noopener noreferrer">
+            {titulo}
+          </a>
+        ) : (
+          titulo
+        )}
       </span>
     </Container>
   );

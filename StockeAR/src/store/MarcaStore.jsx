@@ -1,82 +1,62 @@
-// store/CategoriasStore.jsx
 import { create } from "zustand";
-import apiClient from '../api/api'; // 1. Importamos el cliente de API centralizado
+import apiClient from '../api/api';
 
 export const useMarcaStore = create((set, get) => ({
-
-  // --- Estados del Store (sin cambios) ---
-  buscador: "",
-  setBuscador: (p) => {
-    set({ buscador: p });
-  },
-  datacategorias: [],
-  categoriasItemSelect: [],
+  datamarcas: [],
   parametros: {},
-  selectcategorias: (p) => {
-    set({ categoriasItemSelect: p });
-  },
+  buscador: "",
+  setBuscador: (p) => set({ buscador: p }),
 
-  // --- Funciones de API (reescritas) ---
-
-  // 2. Obtener todas las categorías de una empresa
-  mostrarcategorias: async (p) => {
+  mostrarmarcas: async (p) => {
     try {
-      const response = await apiClient.get(`/categorias/empresa/${p.id_empresa}`);
-      set({ parametros: p, datacategorias: response.data });
-      if (response.data.length > 0) {
-        set({ categoriasItemSelect: response.data[0] });
-      }
+      const response = await apiClient.get(`/marcas/empresa/${p.id_empresa}`);
+      set({ parametros: p, datamarcas: response.data });
       return response.data;
     } catch (error) {
-      console.error("Error al obtener categorías:", error);
-      return [];
+      console.error("Error al obtener marcas:", error);
+      throw error; // Lanza el error para que useQuery lo capture
     }
   },
 
-  // 3. Insertar una nueva categoría
-  insertarcategorias: async (p) => {
+  insertarmarca: async (p) => {
     try {
-      await apiClient.post('/categorias/', p); // p es { descripcion: "...", empresa_id: ... }
-      const { mostrarcategorias, parametros } = get();
-      await mostrarcategorias(parametros); // Refresca la lista
+      await apiClient.post('/marcas/', p);
+      const { mostrarmarcas, parametros } = get();
+      await mostrarmarcas(parametros);
     } catch (error) {
-      console.error("Error al insertar categoría:", error);
+      console.error("Error al insertar marca:", error);
     }
   },
 
-  // 4. Editar una categoría existente
-  editarcategorias: async (p) => {
+  editarmarca: async (p) => {
     try {
-      // Separamos el id de los datos a actualizar
       const { id, ...dataToUpdate } = p;
-      await apiClient.put(`/categorias/${id}`, dataToUpdate);
-      const { mostrarcategorias, parametros } = get();
-      await mostrarcategorias(parametros); // Refresca la lista
+      await apiClient.put(`/marcas/${id}`, dataToUpdate);
+      const { mostrarmarcas, parametros } = get();
+      await mostrarmarcas(parametros);
     } catch (error) {
-      console.error("Error al editar categoría:", error);
+      console.error("Error al editar marca:", error);
     }
   },
 
-  // 5. Eliminar una categoría
-  eliminarcategorias: async (p) => {
+  eliminarmarca: async (p) => {
     try {
-      await apiClient.delete(`/categorias/${p.id}`);
-      const { mostrarcategorias, parametros } = get();
-      await mostrarcategorias(parametros); // Refresca la lista
+      await apiClient.delete(`/marcas/${p.id}`);
+      const { mostrarmarcas, parametros } = get();
+      await mostrarmarcas(parametros);
     } catch (error) {
-      console.error("Error al eliminar categoría:", error);
+      console.error("Error al eliminar marca:", error);
     }
   },
-
-  // 6. Buscar categorías por descripción
-  buscarcategorias: async (p) => {
+  
+  buscarMarca: async (p) => {
     try {
-      const response = await apiClient.get(`/categorias/buscar/${p.id_empresa}`, {
-        params: { descripcion: p.descripcion }
+      const response = await apiClient.get(`/marcas/buscar/${p.id_empresa}`, {
+        params: { descripcion: p.descripcion },
       });
-      set({ datacategorias: response.data });
+      set({ datamarcas: response.data });
     } catch (error) {
-      console.error("Error al buscar categorías:", error);
+      console.error("Error al buscar marcas", error);
     }
   },
 }));

@@ -1,71 +1,68 @@
 import { useEffect } from "react";
 import styled from "styled-components";
 import { v } from "../../../styles/variables";
-import { InputText, Btnsave, useMarcaStore,ConvertirCapitalize } from "../../../index";
+import {
+  InputText,
+  Btnsave,
+  useAuthStore,
+  ConvertirCapitalize,
+  useMarcaStore,
+} from "../../../index";
 import { useForm } from "react-hook-form";
-import { useEmpresaStore } from "../../../store/EmpresaStore";
+
 export function RegistrarMarca({ onClose, dataSelect, accion }) {
-  const { insertarMarca, editarMarca } = useMarcaStore();
-  const { dataempresa } = useEmpresaStore();
+  const { insertarmarca, editarmarca } = useMarcaStore();
+  const { user } = useAuthStore();
   const {
     register,
     formState: { errors },
     handleSubmit,
+    setValue,
   } = useForm();
+
   async function insertar(data) {
+    const p = {
+      descripcion: ConvertirCapitalize(data.nombre),
+      empresa_id: user.empresa.id,
+    };
+
     if (accion === "Editar") {
-      const p = {
-        id: dataSelect.id,
-        descripcion:ConvertirCapitalize( data.nombre),
-      };
-      await editarMarca(p);
-      onClose();
+      await editarmarca({ ...p, id: dataSelect.id });
     } else {
-      const p = {
-        _descripcion:ConvertirCapitalize( data.nombre),
-        _idempresa: dataempresa.id,
-      };
-      await insertarMarca(p);
-      onClose();
+      await insertarmarca(p);
     }
+    onClose();
   }
+
   useEffect(() => {
     if (accion === "Editar") {
+      setValue("nombre", dataSelect.descripcion);
     }
   }, []);
+
   return (
     <Container>
       <div className="sub-contenedor">
         <div className="headers">
           <section>
-            <h1>
-              {accion == "Editar" ? "Editar marca" : "Registrar nueva marca"}
-            </h1>
+            <h1>{accion === "Editar" ? "Editar Marca" : "Registrar Nueva Marca"}</h1>
           </section>
-
           <section>
             <span onClick={onClose}>x</span>
           </section>
         </div>
-
         <form className="formulario" onSubmit={handleSubmit(insertar)}>
           <section>
             <article>
               <InputText icono={<v.iconomarca />}>
                 <input
                   className="form__field"
-                  defaultValue={dataSelect.descripcion}
                   type="text"
-                  placeholder=""
-                  {...register("nombre", {
-                    required: true,
-                  })}
+                  placeholder="Descripción de la marca"
+                  {...register("nombre", { required: true })}
                 />
-                <label className="form__label">marca</label>
-                {errors.nombre?.type === "required" && <p>Campo requerido</p>}
               </InputText>
             </article>
-
             <div className="btnguardarContent">
               <Btnsave
                 icono={<v.iconoguardar />}
@@ -79,6 +76,7 @@ export function RegistrarMarca({ onClose, dataSelect, accion }) {
     </Container>
   );
 }
+
 const Container = styled.div`
   transition: 0.5s;
   top: 0;

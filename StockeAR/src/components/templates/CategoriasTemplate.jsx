@@ -1,82 +1,143 @@
+import React, { useState } from "react";
 import styled from "styled-components";
-import { Btnfiltro, Buscador, ContentFiltro, Header, RegistrarCategorias,  TablaCategorias,  TablaMarca, Title,useCategoriasStore,useMarcaStore,v } from "../../index";
-import { useState } from "react";
-export function CategoriasTemplate({data}) {
-  const [state, setState] = useState(false);
-  const [dataSelect, setdataSelect] = useState([]);
+import { RegistrarCategorias, useCategoriasStore } from "../../index";
+import { FaEdit, FaTrash } from "react-icons/fa";
+
+export function CategoriasTemplate({ data }) {
+  const [showForm, setShowForm] = useState(false);
   const [accion, setAccion] = useState("");
-  const [openRegistro, SetopenRegistro] = useState(false);
-  const nuevoRegistro=()=>{
-    SetopenRegistro(!openRegistro);
-    setAccion("Nuevo")
-    setdataSelect([])
-  }
-  const {setBuscador} = useCategoriasStore()
+  const [dataSelect, setDataSelect] = useState({});
+  const { eliminarcategorias } = useCategoriasStore();
+
+  const handleEdit = (item) => {
+    setDataSelect(item);
+    setAccion("Editar");
+    setShowForm(true);
+  };
+
+  const handleNew = () => {
+    setDataSelect({});
+    setAccion("Nuevo");
+    setShowForm(true);
+  };
+  
+  const handleDelete = (id) => {
+    if(window.confirm("¿Estás seguro de que quieres eliminar esta categoría?")) {
+      eliminarcategorias({ id });
+    }
+  };
+
   return (
     <Container>
-      {
-        openRegistro &&  <RegistrarCategorias dataSelect={dataSelect} accion={accion} onClose={()=>SetopenRegistro(!openRegistro)}/>
-      }
-     
-      <header className="header">
-        <Header
-          stateConfig={{ state: state, setState: () => setState(!state) }}
-        />
-      </header>
-      <section className="area1">
-        <ContentFiltro>
-          <Title>
-            Categorias
-          </Title>
-           <Btnfiltro funcion={nuevoRegistro} bgcolor="#f6f3f3"
-            textcolor="#353535"
-            icono={<v.agregar/>}/>
-        </ContentFiltro>
-       
-      </section>
-      <section className="area2">
-        <Buscador setBuscador={setBuscador}/>
-      </section>
-      <section className="main">
-        <TablaCategorias data={data} SetopenRegistro={SetopenRegistro}
-        setdataSelect={setdataSelect} setAccion={setAccion}/>
-      </section>
+      <Header>
+        <h1>Categorías</h1>
+        <button onClick={handleNew}>+ Nueva Categoría</button>
+      </Header>
+
+      {showForm && (
+        <Modal>
+          <RegistrarCategorias
+            onClose={() => setShowForm(false)}
+            accion={accion}
+            dataSelect={dataSelect}
+          />
+        </Modal>
+      )}
+
+      <Table>
+        <thead>
+          <tr>
+            <th>Descripción</th>
+            <th>Color</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {data?.map((item) => (
+            <tr key={item.id}>
+              <td>{item.descripcion}</td>
+              <td>
+                <ColorCircle color={item.color} />
+              </td>
+              <td className="actions">
+                <button onClick={() => handleEdit(item)}><FaEdit /></button>
+                <button onClick={() => handleDelete(item.id)}><FaTrash /></button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </Table>
     </Container>
   );
 }
+
+// Estilos
 const Container = styled.div`
-  min-height: 100vh;
-  width: 100%;
-  background-color: ${(props) => props.theme.bgtotal};
+  padding: 20px;
   color: ${({ theme }) => theme.text};
-  display: grid;
-  padding: 15px;
-  grid-template:
-    "header" 100px
-    "area1" 100px
-    "area2" 100px
-    "main" auto;
-  .header {
-    grid-area: header;
-    /* background-color: rgba(103, 93, 241, 0.14); */
-    display: flex;
-    align-items: center;
+`;
+const Header = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  button {
+    padding: 10px 20px;
+    background-color: #4caf50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    &:hover {
+      opacity: 0.9;
+    }
   }
-  .area1 {
-    grid-area: area1;
-    /* background-color: rgba(229, 67, 26, 0.14); */
-    display: flex;
-    align-items: center;
+`;
+const Table = styled.table`
+  width: 100%;
+  border-collapse: collapse;
+  th, td {
+    padding: 12px 15px;
+    border-bottom: 1px solid ${({ theme }) => theme.bg3};
+    text-align: left;
   }
-  .area2 {
-    grid-area: area2;
-    /* background-color: rgba(77, 237, 106, 0.14); */
-    display: flex;
-    align-items: center;
-    justify-content:end;
+  th {
+    font-weight: bold;
+    text-transform: uppercase;
+    font-size: 12px;
+    color: ${({ theme }) => theme.text_secondary};
   }
-  .main {
-    grid-area: main;
-    /* background-color: rgba(179, 46, 241, 0.14); */
+  .actions {
+    button {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: ${({ theme }) => theme.text};
+      margin-right: 10px;
+      font-size: 16px;
+      &:hover {
+        color: #4caf50;
+      }
+    }
   }
+`;
+const Modal = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 100;
+`;
+const ColorCircle = styled.div`
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background-color: ${(props) => props.color};
+  border: 1px solid ${({ theme }) => theme.bg_secondary};
 `;

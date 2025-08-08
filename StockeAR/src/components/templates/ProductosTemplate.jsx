@@ -1,13 +1,27 @@
-import React, { useState } from "react";
+import React, { useState } from "react"; // <-- Importamos useState
 import styled from "styled-components";
-import { RegistrarMarca, useMarcaStore } from "../../index";
+import {
+  FormularioProducto,
+  useProductosStore,
+  Buscador,
+  Header,
+} from "../../index";
 import { FaEdit, FaTrash } from "react-icons/fa";
 
-export function MarcaTemplate({ data }) {
+export function ProductosTemplate({ data }) {
+  // --- AÑADIDO: Los estados que faltaban ---
   const [showForm, setShowForm] = useState(false);
   const [dataSelect, setDataSelect] = useState({});
   const [accion, setAccion] = useState("");
-  const { eliminarmarca } = useMarcaStore();
+  
+  const { setBuscador, eliminarproductos } = useProductosStore();
+  const [state, setState] = useState(false);
+
+  const handleNew = () => {
+    setDataSelect({});
+    setAccion("Nuevo");
+    setShowForm(true);
+  };
 
   const handleEdit = (item) => {
     setDataSelect(item);
@@ -15,39 +29,45 @@ export function MarcaTemplate({ data }) {
     setShowForm(true);
   };
 
-  const handleNew = () => {
-    setDataSelect({});
-    setAccion("Nuevo");
-    setShowForm(true);
-  };
-  
   const handleDelete = (id) => {
-    if (window.confirm("¿Estás seguro de que quieres eliminar esta marca?")) {
-      eliminarmarca({ id });
+    if (window.confirm("¿Estás seguro de que quieres eliminar este producto?")) {
+      eliminarproductos({ id });
     }
   };
 
   return (
     <Container>
-      <Header>
-        <h1>Marcas</h1>
-        <button onClick={handleNew}>+ Nueva Marca</button>
-      </Header>
-
       {showForm && (
         <Modal>
-          <RegistrarMarca
-            onClose={() => setShowForm(false)}
-            accion={accion}
-            dataSelect={dataSelect}
-          />
+            <FormularioProducto
+              onClose={() => setShowForm(false)}
+              dataSelect={dataSelect}
+              accion={accion}
+            />
         </Modal>
       )}
+      
+      <div className="header">
+        <Header stateConfig={{ state: state, setState: () => setState(!state) }} />
+      </div>
+
+      <TitleActions>
+        <h1>Productos</h1>
+        <button onClick={handleNew}>+ Nuevo Producto</button>
+      </TitleActions>
+
+      <BuscadorContainer>
+        <Buscador setBuscador={setBuscador} />
+      </BuscadorContainer>
 
       <Table>
         <thead>
           <tr>
             <th>Descripción</th>
+            <th>Categoría</th>
+            <th>Marca</th>
+            <th>Stock</th>
+            <th>P. Venta</th>
             <th>Acciones</th>
           </tr>
         </thead>
@@ -55,6 +75,10 @@ export function MarcaTemplate({ data }) {
           {data?.map((item) => (
             <tr key={item.id}>
               <td>{item.descripcion}</td>
+              <td><CategoryLabel>{item.categoria.descripcion}</CategoryLabel></td>
+              <td>{item.marca.descripcion}</td>
+              <td>{item.stock}</td>
+              <td>{item.precio_venta}</td>
               <td className="actions">
                 <button onClick={() => handleEdit(item)}><FaEdit /></button>
                 <button onClick={() => handleDelete(item.id)}><FaTrash /></button>
@@ -67,12 +91,16 @@ export function MarcaTemplate({ data }) {
   );
 }
 
+
 // Estilos
 const Container = styled.div`
-  padding: 20px;
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
   color: ${({ theme }) => theme.text};
 `;
-const Header = styled.div`
+const TitleActions = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -86,6 +114,9 @@ const Header = styled.div`
     cursor: pointer;
   }
 `;
+const BuscadorContainer = styled.div`
+  margin-bottom: 20px;
+`;
 const Table = styled.table`
   width: 100%;
   border-collapse: collapse;
@@ -97,4 +128,11 @@ const Modal = styled.div`
   position: fixed; top: 0; left: 0; width: 100%; height: 100%;
   background-color: rgba(0, 0, 0, 0.7);
   display: flex; justify-content: center; align-items: center; z-index: 100;
+`;
+const CategoryLabel = styled.span`
+  background-color: ${(props) => props.theme.bg5};
+  color: ${(props) => props.theme.text};
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 12px;
 `;

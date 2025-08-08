@@ -1,34 +1,40 @@
 import { useQuery } from "@tanstack/react-query";
-import {
+import { 
+  useAuthStore, 
+  useMarcaStore, 
   MarcaTemplate,
-  SpinnerLoader,
-  useEmpresaStore,
-  useMarcaStore,
+  SpinnerLoader 
 } from "../index";
 
 export function Marca() {
-  const { mostrarMarca, datamarca, buscarMarca, buscador } = useMarcaStore();
-  const { dataempresa } = useEmpresaStore();
+  const { user } = useAuthStore();
+  const { mostrarmarcas, datamarcas, buscarMarca, buscador } = useMarcaStore();
+
+  if (!user) {
+    return <SpinnerLoader />;
+  }
+  
+  const id_empresa = user.empresa.id;
+
   const { isLoading, error } = useQuery({
-    queryKey: ["mostrar marca", { id_empresa: dataempresa?.id }],
-    queryFn: () => mostrarMarca({ id_empresa: dataempresa?.id }),
-    enabled: dataempresa?.id != null,
+    queryKey: ["marcas", id_empresa],
+    queryFn: () => mostrarmarcas({ id_empresa: id_empresa }),
+    enabled: !!id_empresa,
   });
-  const { data: buscardata } = useQuery({
-    queryKey: [
-      "buscar marca",
-      { id_empresa: dataempresa.id, descripcion: buscador },
-    ],
-    queryFn: () =>
-      buscarMarca({ id_empresa: dataempresa.id, descripcion: buscador }),
-    enabled: dataempresa.id != null,
+
+  useQuery({
+    queryKey: ["buscar marca", { id_empresa, descripcion: buscador }],
+    queryFn: () => buscarMarca({ id_empresa, descripcion: buscador }),
+    enabled: !!(id_empresa && buscador),
   });
+
   if (isLoading) {
     return <SpinnerLoader />;
   }
+  
   if (error) {
-    return <span>Error...</span>;
+    return <span>Error al cargar las marcas.</span>;
   }
 
-  return <MarcaTemplate data={datamarca}/>;
+  return <MarcaTemplate data={datamarcas} />;
 }

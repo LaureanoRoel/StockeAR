@@ -15,6 +15,7 @@ class Empresa(Base):
     usuarios = relationship("Usuario", back_populates="empresa")
     categorias = relationship("Categoria", back_populates="empresa")
     marcas = relationship("Marca", back_populates="empresa")
+    productos = relationship("Producto", back_populates="empresa")
 
 class Usuario(Base):
     __tablename__ = "usuario"
@@ -29,8 +30,11 @@ class Categoria(Base):
     __tablename__ = "categoria"
     id = Column(Integer, primary_key=True, index=True)
     descripcion = Column(String, index=True)
+    color = Column(String, nullable=True)
     empresa_id = Column(Integer, ForeignKey("empresa.id"))
     empresa = relationship("Empresa", back_populates="categorias")
+    productos = relationship("Producto", back_populates="categoria")
+
 
 class Marca(Base):
     __tablename__ = "marca"
@@ -38,3 +42,23 @@ class Marca(Base):
     descripcion = Column(String, index=True)
     empresa_id = Column(Integer, ForeignKey("empresa.id"))
     empresa = relationship("Empresa", back_populates="marcas")
+    productos = relationship("Producto", back_populates="marca")
+# En app/models.py
+class Producto(Base):
+    __tablename__ = "producto"
+    id = Column(Integer, primary_key=True, index=True)
+    descripcion = Column(String, index=True)
+   
+    stock = Column(Float, default=0)
+    stock_minimo = Column(Float, default=0)
+
+    precio_venta = Column(Float, default=0)
+    precio_compra = Column(Float, default=0)
+
+    empresa_id = Column(Integer, ForeignKey("empresa.id"), nullable=False)
+    categoria_id = Column(Integer, ForeignKey("categoria.id"), nullable=False)
+    marca_id = Column(Integer, ForeignKey("marca.id"), nullable=False)
+
+    empresa = relationship("Empresa", back_populates="productos")
+    categoria = relationship("Categoria", back_populates="productos")
+    marca = relationship("Marca", back_populates="productos")

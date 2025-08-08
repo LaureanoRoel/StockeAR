@@ -29,3 +29,7 @@ async def delete_brand(marca_id: int, db: AsyncSession = Depends(get_db)):
     if db_marca is None:
         raise HTTPException(status_code=404, detail="Marca no encontrada")
     return db_marca
+@router.get("/buscar/{empresa_id}", response_model=List[schemas.Marca])
+async def search_brands(empresa_id: int, descripcion: str, db: AsyncSession = Depends(get_db)):
+    marcas = await dal.buscar_marcas(db, empresa_id=empresa_id, descripcion=descripcion)
+    return marcas

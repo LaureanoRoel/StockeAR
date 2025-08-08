@@ -4,58 +4,65 @@ import { v } from "../../../styles/variables";
 import {
   InputText,
   Btnsave,
-  useMarcaStore,
+  useAuthStore, // Usaremos este para obtener el id de la empresa
   ConvertirCapitalize,
   useCategoriasStore,
 } from "../../../index";
 import { useForm } from "react-hook-form";
-import { useEmpresaStore } from "../../../store/EmpresaStore";
 import { CirclePicker } from "react-color";
+
 export function RegistrarCategorias({ onClose, dataSelect, accion }) {
-  const [currentColor, setColor] = useState("#F44336");
+  const [currentColor, setColor] = useState("#36e1f4ff");
   const { insertarcategorias, editarcategorias } = useCategoriasStore();
-  const { dataempresa } = useEmpresaStore();
+  
+  // --- CAMBIO: Obtenemos el usuario logueado desde el AuthStore ---
+  const { user } = useAuthStore();
+  
   const {
     register,
     formState: { errors },
     handleSubmit,
+    setValue, // <-- AÑADIDO: para poder setear valores en el form
   } = useForm();
-  const elegirColor = (color)=>{
-setColor(color.hex)
-  }
+
+  const elegirColor = (color) => {
+    setColor(color.hex);
+  };
+
   async function insertar(data) {
+    // --- CAMBIO: El objeto 'p' ahora tiene los nombres de campo correctos para la API ---
+    const p = {
+      descripcion: ConvertirCapitalize(data.nombre),
+      color: currentColor,
+      empresa_id: user.empresa.id, // Obtenemos el id de la empresa del usuario logueado
+    };
+
     if (accion === "Editar") {
-      const p = {
-        id: dataSelect.id,
-        descripcion: ConvertirCapitalize(data.nombre),
-        color:currentColor
-      };
-      await editarcategorias(p);
-      onClose();
+      // Si es una edición, añadimos el id de la categoría
+      await editarcategorias({ ...p, id: dataSelect.id });
     } else {
-      const p = {
-        _descripcion: ConvertirCapitalize(data.nombre),
-        _idempresa: dataempresa.id,
-        _color:currentColor
-      };
       await insertarcategorias(p);
-      onClose();
     }
+    onClose();
   }
+
   useEffect(() => {
     if (accion === "Editar") {
-      setColor(dataSelect.color)
+      // --- CAMBIO: Usamos setValue de react-hook-form para llenar el input ---
+      setValue("nombre", dataSelect.descripcion);
+      setColor(dataSelect.color);
     }
   }, []);
+
   return (
     <Container>
       <div className="sub-contenedor">
         <div className="headers">
           <section>
             <h1>
-              {accion == "Editar"
-                ? "Editar categorias"
-                : "Registrar nueva categoria"}
+              {accion === "Editar"
+                ? "Editar Categoría"
+                : "Registrar Nueva Categoría"}
             </h1>
           </section>
 
@@ -67,30 +74,29 @@ setColor(color.hex)
         <form className="formulario" onSubmit={handleSubmit(insertar)}>
           <section>
             <article>
+              {/* --- CAMBIO: Eliminamos defaultValue para que react-hook-form controle el valor --- */}
               <InputText icono={<v.iconomarca />}>
                 <input
                   className="form__field"
-                  defaultValue={dataSelect.descripcion}
                   type="text"
-                  placeholder=""
+                  placeholder="Descripción de la categoría"
                   {...register("nombre", {
                     required: true,
                   })}
                 />
-                <label className="form__label">categoria</label>
+                <label className="form__label">Categoría</label>
                 {errors.nombre?.type === "required" && <p>Campo requerido</p>}
               </InputText>
             </article>
             <article className="colorContainer">
-              <CirclePicker onChange={elegirColor} color={currentColor}/>
+              <CirclePicker onChange={elegirColor} color={currentColor} />
             </article>
-            
 
             <div className="btnguardarContent">
               <Btnsave
                 icono={<v.iconoguardar />}
                 titulo="Guardar"
-                bgcolor="#ef552b"
+                bgcolor="#efef2bff"
               />
             </div>
           </section>

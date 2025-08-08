@@ -1,29 +1,28 @@
+// src/pages/Categorias.jsx 
 import { useQuery } from "@tanstack/react-query";
 import {
   CategoriasTemplate,
   SpinnerLoader,
   useCategoriasStore,
-  useEmpresaStore,
- 
+  useAuthStore, // <-- CAMBIO: Usamos el AuthStore
 } from "../index";
 
 export function Categorias() {
-  const { mostrarcategorias, datacategorias, buscarcategorias, buscador } = useCategoriasStore();
-  const { dataempresa } = useEmpresaStore();
+  const { mostrarcategorias, datacategorias } = useCategoriasStore();
+  const { user } = useAuthStore(); // <-- CAMBIO: Obtenemos el usuario logueado
+
+  // Guarda de seguridad mientras carga el usuario
+  if (!user) {
+    return <SpinnerLoader />;
+  }
+  const id_empresa = user.empresa.id;
+
   const { isLoading, error } = useQuery({
-    queryKey: ["mostrar categorias", { id_empresa: dataempresa?.id }],
-    queryFn: () => mostrarcategorias({ id_empresa: dataempresa?.id }),
-    enabled: dataempresa?.id != null,
+    queryKey: ["mostrar categorias", id_empresa],
+    queryFn: () => mostrarcategorias({ id_empresa: id_empresa }),
+    enabled: !!id_empresa,
   });
-  const { data: buscardata } = useQuery({
-    queryKey: [
-      "buscar categorias",
-      { id_empresa: dataempresa.id, descripcion: buscador },
-    ],
-    queryFn: () =>
-      buscarcategorias({ id_empresa: dataempresa.id, descripcion: buscador }),
-    enabled: dataempresa.id != null,
-  });
+
   if (isLoading) {
     return <SpinnerLoader />;
   }
@@ -31,5 +30,5 @@ export function Categorias() {
     return <span>Error...</span>;
   }
 
-  return <CategoriasTemplate data={datacategorias}/>;
+  return <CategoriasTemplate data={datacategorias} />;
 }
